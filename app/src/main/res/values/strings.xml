@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ble_esp32_controller</string>
+    <string name="ble_control_main_menu">BLE Control | Main menu</string>
+    <string name="button_connect">Connect with device</string>
 </resources>
