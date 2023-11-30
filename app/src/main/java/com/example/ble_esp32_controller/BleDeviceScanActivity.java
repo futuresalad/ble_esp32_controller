@@ -19,7 +19,11 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Objects;
 
@@ -29,38 +33,37 @@ public class BleDeviceScanActivity extends AppCompatActivity {
     final private int ENABLE_BLUETOOTH_REQUEST_CODE = 1;
     private boolean isScanning = false;
     private static final long SCAN_PERIOD = 10000;
+    private static ArrayList<String> scannedDevices;
     private final Handler handler = new Handler(Objects.requireNonNull(Looper.myLooper()));
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothLeScanner bluetoothLeScanner;
-    private final String deviceName = "zEPHYr";
+    private final String deviceNameDesired = "Sandro";
     //private final ScanFilter filter = new ScanFilter.Builder().setDeviceName(deviceName).build();
-    private final ScanSettings scanSettings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_BALANCED).build();
+    private final ScanSettings scanSettings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
 
     private final ScanCallback scanCallback = new ScanCallback() {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
-
             super.onScanResult(callbackType, result);
-            Log.d("Scancallback", ("Entered Scancallback"));
 
             if (result != null) {
                 Context context = BleDeviceScanActivity.this;
+                //Log.d("Scancallback", ("Entered Scancallback"));
 
-                if (!(ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
-                    String deviceName = result.getDevice().getName();
 
-                    if (deviceName != null) {
+                if ((ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+                    String deviceName =  result.getDevice().getName();
+
+                    if (deviceName != null && deviceName.equals(deviceNameDesired)) {
+
                         Log.d("Scancallback", ("Found BLE device! Name: %s " + deviceName));
+                        stopBleScan();
 
-                    } else {
-                        Log.d("Scancallback", ("Found BLE device! Unnamed"));
                     }
                 }
             }
-
         }
     };
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +72,22 @@ public class BleDeviceScanActivity extends AppCompatActivity {
 
         initializeBluetooth();
 
+        Button btnScan = findViewById(R.id.startScan);
+        btnScan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isScanning){
+                    stopBleScan();
+                    btnScan.setText("Start scanning");
+                }
+                else{
+                    startBleScan();
+                    btnScan.setText("Stop scanning");
+
+                }
+
+            }
+        });
 
     }
 

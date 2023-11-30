@@ -1,9 +1,15 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Ble_esp32_controller" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+<resources>
+    
+    <!-- Base application theme -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Customize primary and secondary colors -->
+        <item name="colorPrimary">@color/dark_1</item>
+        <item name="colorPrimaryDark">@color/dark_1</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="android:textColor">@color/text_color</item>
+
+        <!-- Other customizations -->
+        <!-- ... -->
     </style>
 
-    <style name="Theme.Ble_esp32_controller" parent="Base.Theme.Ble_esp32_controller" />
 </resources>
