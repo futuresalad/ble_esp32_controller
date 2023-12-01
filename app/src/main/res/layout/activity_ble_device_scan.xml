@@ -4,18 +4,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/dark_0"
     tools:context=".BleDeviceScanActivity">
 
     <Button
         android:id="@+id/startScan"
-        style="@android:style/Widget.Button"
+        style="@style/Widget.Material3.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:hapticFeedbackEnabled="true"
         android:text="@string/scan_for_devices"
+        android:textColor="@color/text_color"
+        android:textSize="18sp"
+        app:icon="@drawable/illuminati_light"
+        app:iconTint="@color/text_color"
+        app:iconSize="22sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.9" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/scan_result_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="480dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.450" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
