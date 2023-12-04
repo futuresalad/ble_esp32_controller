@@ -32,20 +32,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-
 public class BleDeviceScanActivity extends AppCompatActivity {
-
-    public boolean isBluetoothenabled() {
-        return bluetoothenabled;
-    }
-
-    public void setBluetoothenabled(boolean bluetoothenabled) {
-        this.bluetoothenabled = bluetoothenabled;
-    }
 
     List<ScanResult> scannedDevicesList = new ArrayList<>();
     final private int ENABLE_BLUETOOTH_REQUEST_CODE = 1;
-    private boolean bluetoothenabled = false;
     private BluetoothLeScanner bluetoothLeScanner;
     private final Handler handler = new Handler(Objects.requireNonNull(Looper.myLooper()));
     private BluetoothAdapter bluetoothAdapter;
@@ -111,15 +101,12 @@ public class BleDeviceScanActivity extends AppCompatActivity {
 
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ble_device_scan);
 
         RecyclerView scanResultRecyclerView = findViewById(R.id.scan_result_recycler_view);
-
-
         setupRecyclerView(scanResultAdapter);
 
         initializeBluetooth();
@@ -140,7 +127,7 @@ public class BleDeviceScanActivity extends AppCompatActivity {
                         stopBleScan();
                         btnScan.setText("Scan for devices");
                     }
-                }, 5000); // 5000 milliseconds = 5 seconds
+                }, 5000);
             }
 
         }
@@ -185,7 +172,6 @@ public class BleDeviceScanActivity extends AppCompatActivity {
             Log.e("Bluetooth", "BluetoothLeScanner initialization failed");
             return;
         }
-// Finish setup
     }
 
     private void checkAndRequestPermissions() {
