@@ -1,4 +1,4 @@
-## Android app to control Zephyr OS Application on custom ESP32 board
+## Android app to control Zephyr OS Application on ESP32
 This app was created for the app development lecture at MCI Medtech Master.
 A compiled version of the ESP32 firmware is also included in this repository as firmware/bootloader.bin.
 To flash the firmware on a ESP32, run following commands:
