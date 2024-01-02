@@ -13,5 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ble_esp32_controller"
+rootProject.name = "haendchen"
 include(":app")
+ 

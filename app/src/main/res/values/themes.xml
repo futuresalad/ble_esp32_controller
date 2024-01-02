@@ -1,15 +1,14 @@
-<resources>
-    
-    <!-- Base application theme -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Customize primary and secondary colors -->
-        <item name="colorPrimary">@color/dark_1</item>
-        <item name="colorPrimaryDark">@color/dark_1</item>
-        <item name="colorAccent">@color/accent</item>
-        <item name="android:textColor">@color/text_color</item>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Haendchen" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <item name="colorPrimary">@color/grey_1</item>
+        <item name="colorSecondary">@color/grey_2</item>
+        <item name="colorAccent">@color/tears</item>
+        <item name="android:background">@color/white</item>
+        <item name="tint">@color/grey_1</item>
 
-        <!-- Other customizations -->
-        <!-- ... -->
     </style>
 
+    <style name="Theme.Haendchen" parent="Base.Theme.Haendchen" />
 </resources>

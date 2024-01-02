@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FF000000</color>
+    <color name="grey_0">#1C1C1C</color>
+    <color name="grey_1">#FF323232</color>
+    <color name="grey_2">#FF4B4B4B</color>
+    <color name="grey_3">#FF787878</color>
+    <color name="grey_5">#FFA9A9A9</color>
+    <color name="grey_4">#FFD5D5D5</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="dark_0">#151515</color>
-    <color name="dark_1">#2E2E2E</color>
-    <color name="dark_2">#474747</color>
-    <color name="dark_3">#636363</color>
-    <color name="text_color">#dbdbdb</color>
-    <color name="accent">#FDD835</color>
+    <color name="blood">#E68C1212</color>
+    <color name="tears">#BF0F5378</color>
 </resources>
