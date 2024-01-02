@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".GripPatternsActivity">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/tableLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
+            android:paddingTop="18dp"
+            android:text="Select grip pattern"
+            android:textAlignment="center"
+            android:textSize="22sp" />
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="18dp"
+            android:paddingBottom="18dp"
+            app:srcCompat="@drawable/grip_patterns" />
+
+    </LinearLayout>
+
+    <TableLayout
+        android:id="@+id/tableLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.95">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/btn_open"
+                style="@style/Widget.Material3.Button.IconButton.Outlined"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="15dp"
+                android:gravity="center"
+                android:padding="40dp"
+                android:text="Open"
+                android:textAlignment="center"
+                android:textSize="16dp"
+                app:cornerRadius="1000dp"
+                app:icon="@drawable/privacy"
+                app:iconGravity="top"
+                app:iconSize="40dp" />
+
+            <Button
+                android:id="@+id/btn_pinch"
+                style="@style/Widget.Material3.Button.IconButton.Outlined"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="15dp"
+                android:gravity="center"
+                android:padding="40dp"
+                android:text="Pinch"
+                android:textAlignment="center"
+                android:textSize="16dp"
+                app:cornerRadius="1000dp"
+                app:icon="@drawable/pinching"
+                app:iconGravity="top"
+                app:iconSize="40dp" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/btn_indicate"
+                style="@style/Widget.Material3.Button.IconButton.Outlined"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="15dp"
+                android:gravity="center"
+                android:padding="40dp"
+                android:text="Point"
+                android:textAlignment="center"
+                android:textSize="16dp"
+                app:cornerRadius="1000dp"
+                app:icon="@drawable/clicker"
+                app:iconGravity="top"
+                app:iconSize="40dp" />
+
+            <Button
+                android:id="@+id/btn_grab"
+                style="@style/Widget.Material3.Button.IconButton.Outlined"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="15dp"
+                android:gravity="center"
+                android:padding="40dp"
+                android:text="Grab"
+                android:textAlignment="center"
+                android:textSize="16dp"
+                app:cornerRadius="1000dp"
+                app:icon="@drawable/fist"
+                app:iconGravity="top"
+                app:iconSize="40dp" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/btn_thumbs"
+                style="@style/Widget.Material3.Button.IconButton.Outlined"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="15dp"
+                android:gravity="center"
+                android:padding="40dp"
+                android:text="Thumbs"
+                android:textAlignment="center"
+                android:textSize="16dp"
+                app:cornerRadius="1000dp"
+                app:icon="@drawable/thumbs"
+                app:iconGravity="top"
+                app:iconSize="40dp" />
+
+            <Button
+                android:id="@+id/btn_rock"
+                style="@style/Widget.Material3.Button.IconButton.Outlined"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="15dp"
+                android:gravity="center"
+                android:padding="40dp"
+                android:text="Rock"
+                android:textAlignment="center"
+                android:textSize="16dp"
+                app:cornerRadius="1000dp"
+                app:icon="@drawable/rockon"
+                app:iconGravity="top"
+                app:iconSize="40dp" />
+        </TableRow>
+
+    </TableLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
