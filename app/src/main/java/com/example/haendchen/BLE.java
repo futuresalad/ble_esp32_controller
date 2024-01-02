@@ -236,7 +236,7 @@ public class BLE {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 for (BluetoothGattService service : gatt.getServices()) {
                     if (service.getUuid().toString().equals(nusUUID_str)) {
-                        // This is the service we are interested in
+
                         Log.i("MyApp", "Nus service discovered!");
                         nusservice = service;
                         nusTxChar = nusservice.getCharacteristic(UUID.fromString(nusTxCharUUID_str));
