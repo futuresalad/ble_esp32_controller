@@ -17,7 +17,6 @@ import androidx.activity.OnBackPressedDispatcher;
 import java.util.LinkedList;
 
 public class MainActivity extends AppCompatActivity implements BluetoothConnectionListener {
-
     boolean permissions_granted = false;
     boolean device_connected = false;
     BLE ble;

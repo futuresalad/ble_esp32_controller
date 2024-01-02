@@ -39,7 +39,6 @@ public class BLE {
     private static BLE instance = null;
     private final Handler handler = new Handler(Objects.requireNonNull(Looper.myLooper()));
 
-
     BLE(Context context) {
         this.context = context;
         initializeBluetooth();
@@ -165,18 +164,15 @@ public class BLE {
                                 if (connectedGatt != null && ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
                                     stopBleScan();
                                     setConnected(true);
-
+                                    scannedDevicesList.clear();
 
                                     if (!servicesDiscovered) {
                                         servicesDiscovered = connectedGatt.discoverServices();
 
                                     }
-
                                     if (listener != null) {
                                         listener.onConnectionStateChanged(true);
                                     }
-
-
                                 }
                             }
                         });

@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import java.util.Objects;
 
-
 public class ConnectDeviceActivity extends AppCompatActivity implements BluetoothConnectionListener {
     private final Handler handler = new Handler(Objects.requireNonNull(Looper.myLooper()));
 

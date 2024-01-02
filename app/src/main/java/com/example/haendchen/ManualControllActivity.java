@@ -31,13 +31,13 @@ public class ManualControllActivity extends AppCompatActivity implements Bluetoo
 
         for (SeekBar seekBar : seekBars) {
             seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                int progress_final;
-                boolean progressChanged = false;
+
 
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    progress_final = progress;
-                    progressChanged = true;
+                    String value = seekBar.getContentDescription() + "_" + progress;
+                    ble.writeCharacteristic(value.getBytes());
+
                 }
 
                 @Override
@@ -47,11 +47,7 @@ public class ManualControllActivity extends AppCompatActivity implements Bluetoo
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    if (progressChanged) {
-                        String value = seekBar.getContentDescription() + "_" + progress_final;
-                        ble.writeCharacteristic(value.getBytes());
-                        progressChanged = false;
-                    }
+
                 }
             });
         }
