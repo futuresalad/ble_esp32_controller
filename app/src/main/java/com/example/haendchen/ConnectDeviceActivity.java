@@ -1,9 +1,13 @@
 package com.example.haendchen;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -25,26 +29,49 @@ public class ConnectDeviceActivity extends AppCompatActivity implements Bluetoot
 
         setContentView(R.layout.activity_connect_device);
 
-        BLE ble = BLE.getInstance(getApplicationContext());
+        String deviceName = getIntent().getStringExtra("QR_CODE_CONTENT");
+        if (deviceName == null) {
+            finish();
+        }
 
+        BLE ble = BLE.getInstance(getApplicationContext());
         BLE.getInstance(this).setBluetoothConnectionListener(this);
 
-        ProgressBar spinning_wheel = (ProgressBar) findViewById(R.id.spinning_wheel);
-        TextView    scan_text = (TextView)findViewById(R.id.scan_text);
+        ProgressBar spinningWheel = (ProgressBar) findViewById(R.id.spinning_wheel);
+        TextView    scanText = (TextView)findViewById(R.id.scan_text);
+        Button      btnRetry = findViewById(R.id.retry_btn);
 
-        ble.startBleScan();
+        ble.startBleScan(deviceName);
+        spinningWheel.setVisibility(View.VISIBLE);
 
-        spinning_wheel.setVisibility(View.VISIBLE);
+        btnRetry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent retryIntent = new Intent(ConnectDeviceActivity.this, ConnectDeviceActivity.class);
+                startActivity(retryIntent);
+            };
+        });
 
-        final Runnable r = new Runnable() {
+
+        handler.postDelayed(new Runnable() {
             public void run() {
-                spinning_wheel.setVisibility(View.GONE);
-                scan_text.setText("Device not found");
-                handler.postDelayed(this, 5000);
+                // Checking if the device was found
+                if (!ble.isConnected()) {
+                    spinningWheel.setVisibility(View.GONE);
+                    scanText.setText("Device not found");
+                    btnRetry.setVisibility(View.VISIBLE);
+                }
             }
-        };
+        }, 5000);
 
+        OnBackPressedCallback callbackConnectBack = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                finish();
 
+            }};
+
+        getOnBackPressedDispatcher().addCallback(this, callbackConnectBack);
     }
 
     @Override

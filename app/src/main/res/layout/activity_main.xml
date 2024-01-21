@@ -71,7 +71,41 @@
             app:icon="@android:drawable/stat_sys_data_bluetooth"
             app:iconPadding="5dp"
             app:iconSize="22dp" />
+
     </LinearLayout>
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/dark_light_switch"
+        android:layout_width="71dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center|start|center_horizontal|center_vertical|end"
+        android:gravity="center"
+        android:padding="20dp"
+        android:scaleX="1.5"
+        android:scaleY="1.5"
+        android:text="night"
+        android:textColor="@color/white"
+        android:textColorHighlight="@color/grey_3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.95"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.065"
+        app:showText="false"
+        app:trackTint="@color/grey_5"
+        app:useMaterialThemeColors="true" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:layout_constraintBottom_toBottomOf="@+id/dark_light_switch"
+        app:layout_constraintEnd_toStartOf="@+id/dark_light_switch"
+        app:layout_constraintHorizontal_bias="0.98"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/dark_light_switch"
+        app:srcCompat="@drawable/nightandday" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

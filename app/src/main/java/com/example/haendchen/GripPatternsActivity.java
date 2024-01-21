@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 
-
 public class GripPatternsActivity extends AppCompatActivity implements BluetoothConnectionListener{
 
     @Override
@@ -17,7 +16,6 @@ public class GripPatternsActivity extends AppCompatActivity implements Bluetooth
 
         BLE ble = BLE.getInstance(getApplicationContext());
         BLE.getInstance(this).setBluetoothConnectionListener(this);
-
 
         Button btn_open = findViewById(R.id.btn_open);
         Button btn_grab = findViewById(R.id.btn_grab);
@@ -32,7 +30,6 @@ public class GripPatternsActivity extends AppCompatActivity implements Bluetooth
         btn_thumbs.setOnClickListener(v -> ble.writeCharacteristic("G_4".getBytes()));
         btn_rock.setOnClickListener(v -> ble.writeCharacteristic("G_5".getBytes()));
         btn_pinch.setOnClickListener(v -> ble.writeCharacteristic("G_6".getBytes()));
-
     }
 
     @Override

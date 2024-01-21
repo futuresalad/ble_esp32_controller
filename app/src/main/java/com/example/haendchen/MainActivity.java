@@ -2,24 +2,46 @@ package com.example.haendchen;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
+
+import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.google.zxing.integration.android.IntentResult;
+import com.journeyapps.barcodescanner.CaptureActivity;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
+import android.content.SharedPreferences;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
+
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.journeyapps.barcodescanner.CaptureActivity;
+
 import java.util.LinkedList;
+
 
 public class MainActivity extends AppCompatActivity implements BluetoothConnectionListener {
     boolean permissions_granted = false;
     boolean device_connected = false;
     BLE ble;
+    boolean nightMode;
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+    SwitchMaterial switchNightMode;
     Button btnConnectDevice;
     Button btnManualControl;
     Button btnGripPatterns;
@@ -33,41 +55,53 @@ public class MainActivity extends AppCompatActivity implements BluetoothConnecti
         ble = BLE.getInstance(getApplicationContext());
         BLE.getInstance(this).setBluetoothConnectionListener(this);
 
-        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+        OnBackPressedCallback callbackMainBack = new OnBackPressedCallback(true) {
 
             @Override
             public void handleOnBackPressed() {
                 finish();
             }};
 
-        getOnBackPressedDispatcher().addCallback(this, callback);
+        getOnBackPressedDispatcher().addCallback(this, callbackMainBack);
 
-         btnConnectDevice = findViewById(R.id.connect_device_btn);
-         btnManualControl = findViewById(R.id.manual_control_btn);
-         btnGripPatterns = findViewById(R.id.grip_patterns_btn);
+        SwitchCompat switchNightMode = findViewById(R.id.dark_light_switch);
+        sharedPreferences = getSharedPreferences("MODE", MODE_PRIVATE);
+        nightMode = sharedPreferences.getBoolean("nightMode", false);
+
+        switchNightMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
+
+            if (isChecked) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                editor = sharedPreferences.edit();
+                editor.putBoolean("nightMode", false);
+
+
+
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                editor = sharedPreferences.edit();
+                editor.putBoolean("nightMode", true);
+
+            }
+            editor.apply();
+        });
+
+        btnConnectDevice = findViewById(R.id.connect_device_btn);
+        btnManualControl = findViewById(R.id.manual_control_btn);
+        btnGripPatterns = findViewById(R.id.grip_patterns_btn);
 
         updateUIBasedOnConnectionStatus();
 
         btnConnectDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (checkAndRequestPermissions()) {
-                    if (ble.bluetoothAdapter != null && !ble.bluetoothAdapter.isEnabled()) {
 
-                        Intent enableBleIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-
-                        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-
-                            return;
-                        }
-
-                        startActivity(enableBleIntent);
-
-                    } else {
-                        Intent scanResultIntent = new Intent(MainActivity.this, ConnectDeviceActivity.class);
-                        startActivity(scanResultIntent);
-                    }
-                }
+                IntentIntegrator integrator = new IntentIntegrator(MainActivity.this);
+                integrator.setCaptureActivity(CaptureActivity.class);
+                integrator.setOrientationLocked(true);
+                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
+                integrator.setPrompt("Scan QR Code on device");
+                integrator.initiateScan();
             }
 
         });
@@ -94,6 +128,33 @@ public class MainActivity extends AppCompatActivity implements BluetoothConnecti
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if(result != null) {
+            if(result.getContents() == null) {
+                Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+
+                if (checkAndRequestPermissions()) {
+                    if (ble.bluetoothAdapter != null && !ble.bluetoothAdapter.isEnabled()) {
+                        Intent enableBleIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                            return;
+                        }
+                        startActivity(enableBleIntent);
+                    } else {
+                        Intent scanResultIntent = new Intent(MainActivity.this, ConnectDeviceActivity.class);
+                        scanResultIntent.putExtra("QR_CODE_CONTENT", result.getContents()); // Pass the QR code content
+                        startActivity(scanResultIntent);
+                    }
+                }
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
     private void updateUIBasedOnConnectionStatus() {
 
         if (BLE.getInstance(this).isConnected()) {

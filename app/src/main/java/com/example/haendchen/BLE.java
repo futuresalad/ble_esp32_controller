@@ -1,11 +1,7 @@
 package com.example.haendchen;
 
-import static android.bluetooth.BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT;
-
 import android.Manifest;
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -17,18 +13,12 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.view.View;
-import android.os.Handler;
-import android.os.Looper;
-
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -52,15 +42,19 @@ public class BLE {
     }
 
     private BluetoothConnectionListener listener;
+
     public void setBluetoothConnectionListener(BluetoothConnectionListener listener) {
         this.listener = listener;
     }
+
     public boolean isConnected() {
         return connected;
     }
+
     public void setConnected(boolean connected) {
         this.connected = connected;
     }
+
     public boolean connected = false;
     public int connectionState = BluetoothProfile.STATE_DISCONNECTED;
     private boolean servicesDiscovered = false;
@@ -71,7 +65,7 @@ public class BLE {
     private BluetoothLeScanner bluetoothLeScanner;
     private final List<ScanResult> scannedDevicesList = new ArrayList<>();
     private final ScanSettings scanSettings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
-    private final String deviceNameDesired = "eiskaltes_haendchen";
+    private String deviceNameDesired = "dummy";
     private BluetoothGatt connectedGatt;
     public BluetoothGattService nusservice;
     public BluetoothGattCharacteristic nusTxChar;
@@ -86,7 +80,10 @@ public class BLE {
         bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
     }
 
-    void startBleScan() {
+    void startBleScan(String devicename) {
+
+        deviceNameDesired = devicename;
+
         if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             if (bluetoothLeScanner != null) {
@@ -207,19 +204,16 @@ public class BLE {
         @Override
         public void onCharacteristicRead(@NonNull BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, byte[] value, int success) {
 
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                if (success == BluetoothGatt.GATT_SUCCESS) {
-                    Log.d("MyApp", "Value received: " + Arrays.toString(value));
+            if (success == BluetoothGatt.GATT_SUCCESS) {
+                Log.d("MyApp", "Value received: " + Arrays.toString(value));
 
-                }
             }
         }
 
         @Override
-        public void onCharacteristicWrite (BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status){
+        public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             Log.i("MyApp", "Value written");
         }
-
 
         @Override
         public void onPhyUpdate(BluetoothGatt gatt, int txPhy, int rxPhy, int status) {
@@ -248,6 +242,7 @@ public class BLE {
 
     public void writeCharacteristic(byte[] data) {
         if (connectedGatt != null && nusRxChar != null) {
+
 
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
 
