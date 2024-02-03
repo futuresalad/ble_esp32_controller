@@ -7,6 +7,54 @@
     tools:context=".MainActivity">
 
     <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="387dp"
+        android:layout_height="68dp"
+        android:layout_marginTop="50dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/imageView4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <TextView
+            android:id="@+id/UserNameGreeting"
+            android:layout_width="230dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginVertical="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="5dp"
+            android:gravity="center"
+            android:text="Logging in..."
+            android:textSize="22dp" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            app:srcCompat="@drawable/nightandday" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/dark_light_switch"
+            android:layout_width="70dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center|right|center_vertical|end"
+            android:layout_margin="5dp"
+            android:padding="20dp"
+            android:scaleX="1.5"
+            android:scaleY="1.5"
+            android:text="night"
+            android:textColor="@color/white"
+            android:textColorHighlight="@color/grey_3"
+            app:showText="false"
+            app:trackTint="@color/grey_5"
+            app:useMaterialThemeColors="true" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="240dp"
         android:layout_height="wrap_content"
@@ -17,7 +65,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.85">
 
-
+        <!-- Your existing buttons -->
         <Button
             android:id="@+id/manual_control_btn"
             style="@style/Widget.Material3.Button.IconButton.Outlined"
@@ -72,40 +120,147 @@
             app:iconPadding="5dp"
             app:iconSize="22dp" />
 
+        <Button
+            android:id="@+id/logoutButton"
+            style="@style/Widget.Material3.Button.IconButton.Outlined"
+            android:layout_width="200dp"
+            android:layout_height="70dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="4dp"
+            android:clipToOutline="false"
+            android:hapticFeedbackEnabled="true"
+            android:padding="14dp"
+            android:text="Log out"
+            android:textSize="16dp"
+            app:icon="?attr/actionModeCloseDrawable"
+            app:iconPadding="5dp"
+            app:iconSize="22dp"
+            app:iconTint="@color/white" />
+
     </LinearLayout>
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/dark_light_switch"
-        android:layout_width="71dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center|start|center_horizontal|center_vertical|end"
-        android:gravity="center"
-        android:padding="20dp"
-        android:scaleX="1.5"
-        android:scaleY="1.5"
-        android:text="night"
-        android:textColor="@color/white"
-        android:textColorHighlight="@color/grey_3"
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="320dp"
+        android:layout_height="294dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="120dp"
+        android:background="#00FFFFFF"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
+        app:srcCompat="@drawable/splash" />
+
+    <FrameLayout
+        android:id="@+id/loginSignupOverlayPanel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#AA000000"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.95"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.065"
-        app:showText="false"
-        app:trackTint="@color/grey_5"
-        app:useMaterialThemeColors="true" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        app:layout_constraintBottom_toBottomOf="@+id/dark_light_switch"
-        app:layout_constraintEnd_toStartOf="@+id/dark_light_switch"
-        app:layout_constraintHorizontal_bias="0.98"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/dark_light_switch"
-        app:srcCompat="@drawable/nightandday" />
+        <LinearLayout
+            android:id="@+id/loginSignupLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:elevation="4dp"
+            android:orientation="vertical"
+            android:padding="32dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/LoginFormText"
+                    android:layout_width="170dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Login"
+                    android:textSize="22dp" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/loginSignupToggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|right"
+                    android:checked="false"
+                    android:scaleX="1.5"
+                    android:scaleY="1.5"
+                    android:textOff="Login"
+                    android:textOn="Sign Up"
+                    app:trackTint="@color/grey_5" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/loginForm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <EditText
+                    android:id="@+id/loginUsername"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:hint="Username" />
+
+                <EditText
+                    android:id="@+id/loginPassword"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:hint="Password"
+                    android:inputType="textPassword" />
+
+                <Button
+                    android:id="@+id/loginButton"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Login" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/signupForm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <EditText
+                    android:id="@+id/signupUsername"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:hint="Username" />
+
+                <EditText
+                    android:id="@+id/signupPassword"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:hint="Password"
+                    android:inputType="textPassword" />
+
+                <Button
+                    android:id="@+id/signupButton"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Sign Up" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </FrameLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
