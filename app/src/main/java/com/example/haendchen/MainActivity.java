@@ -13,47 +13,83 @@ import com.journeyapps.barcodescanner.CaptureActivity;
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.content.SharedPreferences;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.activity.OnBackPressedDispatcher;
+import androidx.room.Room;
 
 import com.google.zxing.integration.android.IntentIntegrator;
-import com.journeyapps.barcodescanner.CaptureActivity;
 
 import java.util.LinkedList;
-
 
 public class MainActivity extends AppCompatActivity implements BluetoothConnectionListener {
     boolean permissions_granted = false;
     boolean device_connected = false;
-    BLE ble;
     boolean nightMode;
+    AppDatabase appDatabase;
+    User user;
+    BLE ble;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
     SwitchMaterial switchNightMode;
     Button btnConnectDevice;
     Button btnManualControl;
     Button btnGripPatterns;
+    SwitchCompat loginSignupSwitch;
+    Button btnSignup;
+    Button btnLogin;
+    Button btnLogout;
+    View loginSignupOverlay;
+    View loginForm;
+    View signupForm;
+    TextView loginFormText;
+    TextView userGreetingText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
 
+        boolean isUser_logged_in = prefs.getBoolean("isUserLoggedIn", false); // false is the default value
+
+        appDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "db").allowMainThreadQueries().build();
         ble = BLE.getInstance(getApplicationContext());
         BLE.getInstance(this).setBluetoothConnectionListener(this);
+
+        loginSignupSwitch = findViewById(R.id.loginSignupToggle);
+        btnSignup = findViewById(R.id.signupButton);
+        btnLogin = findViewById(R.id.loginButton);
+        btnLogout = findViewById(R.id.logoutButton);
+        loginSignupOverlay = findViewById(R.id.loginSignupOverlayPanel);
+        loginForm = findViewById(R.id.loginForm);
+        signupForm = findViewById(R.id.signupForm);
+        loginFormText = findViewById(R.id.LoginFormText);
+        userGreetingText = findViewById(R.id.UserNameGreeting);
+        btnConnectDevice = findViewById(R.id.connect_device_btn);
+        btnManualControl = findViewById(R.id.manual_control_btn);
+        btnGripPatterns = findViewById(R.id.grip_patterns_btn);
+
+        if (isUser_logged_in) {
+            String username = prefs.getString("Username", "User");
+            userGreetingText.setText("Hello, " + username);
+            loginSignupOverlay.setVisibility(View.GONE);
+            btnConnectDevice.setVisibility(View.VISIBLE);
+            btnLogout.setVisibility(View.VISIBLE);
+
+        } else {
+            loginSignupOverlay.setVisibility(View.VISIBLE);
+            btnConnectDevice.setVisibility(View.GONE);
+            btnLogout.setVisibility(View.GONE);
+        }
 
         OnBackPressedCallback callbackMainBack = new OnBackPressedCallback(true) {
 
@@ -75,20 +111,15 @@ public class MainActivity extends AppCompatActivity implements BluetoothConnecti
                 editor = sharedPreferences.edit();
                 editor.putBoolean("nightMode", false);
 
-
-
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 editor = sharedPreferences.edit();
                 editor.putBoolean("nightMode", true);
 
+
             }
             editor.apply();
         });
-
-        btnConnectDevice = findViewById(R.id.connect_device_btn);
-        btnManualControl = findViewById(R.id.manual_control_btn);
-        btnGripPatterns = findViewById(R.id.grip_patterns_btn);
 
         updateUIBasedOnConnectionStatus();
 
@@ -106,6 +137,82 @@ public class MainActivity extends AppCompatActivity implements BluetoothConnecti
 
         });
 
+
+        btnLogin.setOnClickListener(v -> {
+            String username = ((TextView) findViewById(R.id.loginUsername)).getText().toString();
+            String password = ((TextView) findViewById(R.id.loginPassword)).getText().toString();
+
+            login(username, password, success -> {
+                runOnUiThread(() -> {
+                    if(success) {
+                        // Login success
+                        Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                        loginSignupOverlay.setVisibility(View.GONE);
+
+                        SharedPreferences.Editor editor = getSharedPreferences("AppPrefs", MODE_PRIVATE).edit();
+                        editor.putBoolean("isUserLoggedIn", true);
+                        editor.putString("Username", username);
+                        editor.apply();
+
+                        btnConnectDevice.setVisibility(View.VISIBLE);
+                        btnLogout.setVisibility(View.VISIBLE);
+
+                    } else {
+                        // Login failure
+                        Toast.makeText(MainActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+            });
+        });
+
+        btnLogout.setOnClickListener(v -> {
+            SharedPreferences.Editor editor = getSharedPreferences("AppPrefs", MODE_PRIVATE).edit();
+            editor.putBoolean("isUserLoggedIn", false);
+            editor.apply();
+            loginSignupOverlay.setVisibility(View.VISIBLE); // Show login overlay again
+            Toast.makeText(MainActivity.this, "Logged out", Toast.LENGTH_SHORT).show();
+            userGreetingText.setText("Logging in...");
+            btnConnectDevice.setVisibility(View.GONE);
+            btnLogout.setVisibility(View.GONE);
+
+        });
+
+
+        btnSignup.setOnClickListener(v -> {
+            String username = ((TextView) findViewById(R.id.signupUsername)).getText().toString();
+            String password = ((TextView) findViewById(R.id.signupPassword)).getText().toString();
+            signup(username, password, success -> {
+                runOnUiThread(() -> {
+                    if(success) {
+                        // Signup success
+                        Toast.makeText(MainActivity.this, "Signup Successful", Toast.LENGTH_SHORT).show();
+                    } else {
+                        // Signup failure
+                        Toast.makeText(MainActivity.this, "Username already exists", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            });
+        });
+
+
+        // Inside your overlay handling method
+        loginSignupSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+
+            if (!isChecked) {
+                loginFormText.setText("Login");
+                loginForm.setVisibility(View.VISIBLE);
+                signupForm.setVisibility(View.GONE);
+            }
+            else {
+                loginFormText.setText("Create user");
+                loginForm.setVisibility(View.GONE);
+                signupForm.setVisibility(View.VISIBLE);
+            }
+        });
+
+
+
         btnManualControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,10 +226,8 @@ public class MainActivity extends AppCompatActivity implements BluetoothConnecti
         btnGripPatterns.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Intent gripPatternsIntent = new Intent(MainActivity.this, GripPatternsActivity.class);
                 startActivity(gripPatternsIntent);
-
             }
         });
 
@@ -155,18 +260,20 @@ public class MainActivity extends AppCompatActivity implements BluetoothConnecti
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
     private void updateUIBasedOnConnectionStatus() {
 
         if (BLE.getInstance(this).isConnected()) {
 
-            btnConnectDevice.setVisibility(View.GONE);
             btnManualControl.setVisibility(View.VISIBLE);
             btnGripPatterns.setVisibility(View.VISIBLE);
+            btnConnectDevice.setVisibility(View.GONE);
 
         } else {
-            btnConnectDevice.setVisibility(View.VISIBLE);
             btnManualControl.setVisibility(View.GONE);
             btnGripPatterns.setVisibility(View.GONE);
+            btnConnectDevice.setVisibility(View.VISIBLE);
+
         }
     }
 
@@ -205,6 +312,31 @@ public class MainActivity extends AppCompatActivity implements BluetoothConnecti
         }
     }
 
+    public void login(String username, String password, UserAuthCallback callback) {
+        new Thread(() -> {
+            User loginUser = appDatabase.userDao().getUser(username, password);
+            callback.onResult(loginUser != null); // true if user is found, false otherwise
+            user = loginUser;
+            userGreetingText.setText("Hello, " + username);
+        }).start();
+    }
+    // Method to handle signup
+    public void signup(String username, String password, UserAuthCallback callback) {
+        new Thread(() -> {
+            User existingUser = appDatabase.userDao().findUserByUsername(username);
+            if(existingUser == null) {
+                User newUser = new User();
+                newUser.username = username;
+                newUser.password = password;
+                appDatabase.userDao().insertUser(newUser);
+                callback.onResult(true); // Signup success
+            } else {
+                callback.onResult(false); // User exists
+            }
+        }).start();
+    }
+
+
     private void showPermissionRationale(String permission) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -228,18 +360,14 @@ public class MainActivity extends AppCompatActivity implements BluetoothConnecti
 
     @Override
     public void onConnectionStateChanged(boolean isConnected) {
-        if (isConnected) {
-            Log.d("MyApp", "Device connected! Menu available");
-
-        }
-        else {
-            Log.d("MyApp", "Device disconnected! Returning");
-        }
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                updateUIBasedOnConnectionStatus();
+        runOnUiThread(() -> {
+            SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+            boolean isUserLoggedIn = prefs.getBoolean("isUserLoggedIn", false);
+            if (isUserLoggedIn) {
+                String username = prefs.getString("Username", "User");
+                userGreetingText.setText("Hello, " + username);
             }
+            updateUIBasedOnConnectionStatus();
         });
     }
 
