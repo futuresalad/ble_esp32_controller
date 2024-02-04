@@ -26,14 +26,20 @@ import java.util.UUID;
 import java.util.Arrays;
 
 public class BLE {
+
+    // Singleton instance for global access
     private static BLE instance = null;
+
+    // Handler to post tasks on the main thread
     private final Handler handler = new Handler(Objects.requireNonNull(Looper.myLooper()));
 
+    // Private constructor to enforce singleton pattern
     BLE(Context context) {
         this.context = context;
         initializeBluetooth();
     }
 
+    // Static method to get singleton instance
     public static BLE getInstance(Context appContext) {
         if (instance == null) {
             instance = new BLE(appContext);
@@ -41,8 +47,8 @@ public class BLE {
         return instance;
     }
 
+    // Member variables declaration
     private BluetoothConnectionListener listener;
-
     public void setBluetoothConnectionListener(BluetoothConnectionListener listener) {
         this.listener = listener;
     }
@@ -50,60 +56,62 @@ public class BLE {
     public boolean isConnected() {
         return connected;
     }
-
+    public boolean connected = false;
+    private boolean servicesDiscovered = false;
     public void setConnected(boolean connected) {
         this.connected = connected;
     }
-
-    public boolean connected = false;
     public int connectionState = BluetoothProfile.STATE_DISCONNECTED;
-    private boolean servicesDiscovered = false;
     public int ENABLE_BLUETOOTH_REQUEST_CODE = 1;
-    private Context context;
+    private final Context context;
+    private final List<ScanResult> scannedDevicesList = new ArrayList<>();
+    private final ScanSettings scanSettings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
     public BluetoothManager bluetoothManager;
     public BluetoothAdapter bluetoothAdapter;
     private BluetoothLeScanner bluetoothLeScanner;
-    private final List<ScanResult> scannedDevicesList = new ArrayList<>();
-    private final ScanSettings scanSettings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
-    private String deviceNameDesired = "dummy";
+    private String deviceNameDesired = "dummyDeviceName";
     private BluetoothGatt connectedGatt;
     public BluetoothGattService nusservice;
     public BluetoothGattCharacteristic nusTxChar;
     public BluetoothGattCharacteristic nusRxChar;
+
+    // UUIDs for Nordic UART Service (NUS)
     private final String nusUUID_str = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
     private final String nusTxCharUUID_str = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
     private final String nusRxCharUUID_str = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
 
+    // Initialize Bluetooth manager and adapter
     void initializeBluetooth() {
         bluetoothManager = (BluetoothManager) this.context.getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
         bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
     }
 
+    // Start BLE scan with specified device name
     void startBleScan(String devicename) {
-
         deviceNameDesired = devicename;
 
+        // Check location permission and start scanning
         if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
+            // Scanning for devices for 10 Seconds
             if (bluetoothLeScanner != null) {
                 bluetoothLeScanner.startScan(null, scanSettings, scanCallback);
-
-                handler.postDelayed(this::stopBleScan, 5000);
-
+                handler.postDelayed(this::stopBleScan, 10000);
             }
         }
     }
 
+    // Stop BLE scan
     void stopBleScan() {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
             if (bluetoothLeScanner != null) {
                 bluetoothLeScanner.stopScan(scanCallback);
             }
         }
     }
 
+    // ScanCallback to process discovered devices
     private final ScanCallback scanCallback = new ScanCallback() {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
@@ -118,6 +126,7 @@ public class BLE {
 
                         String currentAddress = result.getDevice().getAddress();
 
+                        // As the devices keep on advertising, the list only gets filled if the device name is not already contained
                         boolean isDuplicate = false;
 
                         for (ScanResult scannedResult : scannedDevicesList) {
@@ -140,6 +149,8 @@ public class BLE {
         }
     };
 
+
+    // BluetoothGattCallback to handle connection changes and Bluetooth GATT operations
     private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
@@ -155,21 +166,18 @@ public class BLE {
 
                         Log.w("MyApp", "Successfully connected to " + deviceAddress);
 
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (connectedGatt != null && ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
-                                    stopBleScan();
-                                    setConnected(true);
-                                    scannedDevicesList.clear();
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            if (connectedGatt != null && ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+                                stopBleScan();
+                                setConnected(true);
+                                scannedDevicesList.clear();
 
-                                    if (!servicesDiscovered) {
-                                        servicesDiscovered = connectedGatt.discoverServices();
+                                if (!servicesDiscovered) {
+                                    servicesDiscovered = connectedGatt.discoverServices();
 
-                                    }
-                                    if (listener != null) {
-                                        listener.onConnectionStateChanged(true);
-                                    }
+                                }
+                                if (listener != null) {
+                                    listener.onConnectionStateChanged(true);
                                 }
                             }
                         });
@@ -201,6 +209,7 @@ public class BLE {
             }
         }
 
+        // Methods for GATT operations like reading/writing characteristics
         @Override
         public void onCharacteristicRead(@NonNull BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, byte[] value, int success) {
 
@@ -240,16 +249,13 @@ public class BLE {
         }
     };
 
+    // Write to a specific BLE characteristic
     public void writeCharacteristic(byte[] data) {
         if (connectedGatt != null && nusRxChar != null) {
-
-
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-
                 return;
             }
             connectedGatt.writeCharacteristic(nusRxChar, data, BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
         }
     }
-
 }

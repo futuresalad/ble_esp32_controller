@@ -4,6 +4,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 
+// Access object for users in database
 @Dao
 public interface UserDAO {
     @Insert

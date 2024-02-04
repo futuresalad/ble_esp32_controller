@@ -18,9 +18,11 @@ public class ManualControllActivity extends AppCompatActivity implements Bluetoo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manual_controll);
 
+        // Ble instance with application wide context
         BLE ble = BLE.getInstance(getApplicationContext());
         BLE.getInstance(this).setBluetoothConnectionListener(this);
 
+        // Setting up sliders for controlling each finger
         List<SeekBar> seekBars = new LinkedList<>(Arrays.asList(
                 findViewById(R.id.seekBar_1),
                 findViewById(R.id.seekBar_2),
@@ -32,22 +34,21 @@ public class ManualControllActivity extends AppCompatActivity implements Bluetoo
         for (SeekBar seekBar : seekBars) {
             seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
-
+                // Writing value to characteristic
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     String value = seekBar.getContentDescription() + "_" + progress;
                     ble.writeCharacteristic(value.getBytes());
-
                 }
 
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
-                    // Optional: Implement if needed
+                    // Optional
                 }
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-
+                    // Optional
                 }
             });
         }
@@ -55,6 +56,8 @@ public class ManualControllActivity extends AppCompatActivity implements Bluetoo
 
     }
 
+
+    // Interface functions for ble connection changes
     @Override
     public void onConnectionStateChanged(boolean isConnected) {
         Intent onConnectionChangeIntent = new Intent(this, MainActivity.class);

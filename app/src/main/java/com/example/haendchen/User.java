@@ -3,6 +3,8 @@ package com.example.haendchen;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+
+// Userclass for database
 @Entity(tableName = "users")
 public class User {
     @PrimaryKey(autoGenerate = true)

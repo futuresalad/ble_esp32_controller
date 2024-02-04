@@ -29,14 +29,17 @@ public class ConnectDeviceActivity extends AppCompatActivity implements Bluetoot
 
         setContentView(R.layout.activity_connect_device);
 
+        // Getting the device name from the QR code scan
         String deviceName = getIntent().getStringExtra("QR_CODE_CONTENT");
         if (deviceName == null) {
             finish();
         }
 
+        // BLE instance with application context
         BLE ble = BLE.getInstance(getApplicationContext());
         BLE.getInstance(this).setBluetoothConnectionListener(this);
 
+        // Show spinning wheel while no device is connected yet
         ProgressBar spinningWheel = (ProgressBar) findViewById(R.id.spinning_wheel);
         TextView    scanText = (TextView)findViewById(R.id.scan_text);
         Button      btnRetry = findViewById(R.id.retry_btn);
@@ -44,6 +47,7 @@ public class ConnectDeviceActivity extends AppCompatActivity implements Bluetoot
         ble.startBleScan(deviceName);
         spinningWheel.setVisibility(View.VISIBLE);
 
+        // Retry scan if nothing is found
         btnRetry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -52,7 +56,7 @@ public class ConnectDeviceActivity extends AppCompatActivity implements Bluetoot
             };
         });
 
-
+        // Show retry button and remove spinning wheel if device is not found
         handler.postDelayed(new Runnable() {
             public void run() {
                 // Checking if the device was found
@@ -62,8 +66,9 @@ public class ConnectDeviceActivity extends AppCompatActivity implements Bluetoot
                     btnRetry.setVisibility(View.VISIBLE);
                 }
             }
-        }, 5000);
+        }, 10000);
 
+        // Callback for back button
         OnBackPressedCallback callbackConnectBack = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -88,6 +93,8 @@ public class ConnectDeviceActivity extends AppCompatActivity implements Bluetoot
             startActivity(onConnectionChangeIntent);
         }
     }
+
+    // Communicate connection change through interface
     @Override
     public void onConnectionStateChanged(boolean isConnected) {
 
@@ -95,13 +102,11 @@ public class ConnectDeviceActivity extends AppCompatActivity implements Bluetoot
             Log.d("MyApp", "Device connected or disconnected! Opening Menu");
             onConnectionChangeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(onConnectionChangeIntent);
-
     }
 
     @Override
     public void onDataReceive(int rxData) {
         Log.d("MyApp", "Data recieved: "+ rxData);
     }
-
 }
 
