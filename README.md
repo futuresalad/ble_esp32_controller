@@ -4,8 +4,7 @@ This app was created for the app development lecture at MCI Medtech Master. The 
 ## Implementations
 + Bluetooth connectivity (BLE)
 + QR code scanning
-+ Grip pattern selection
-+ Manual control of each finger
++ Grip pattern and manual control menues
 + Database for user authentication
 + Switching between Night/Light-mode
 
