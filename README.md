@@ -1,8 +1,8 @@
 ## Project description
 This app was created for the app development lecture at MCI Medtech Master. The App project "Eiskaltes Händchen" is intended to control a 3D printed hand prosthesis over a BLE (bluetooth low energy) connections. 
 
-## Implementations:
-+ Bluetooth connectivity
+## Implementations
++ Bluetooth connectivity (BLE)
 + QR code scanning
 + Grip pattern selection
 + Manual control of each finger
